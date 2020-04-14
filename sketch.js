@@ -1,29 +1,66 @@
-var ball;
+var playerCount=0
+var gamestate=0
+var game,form,player
+var allplayers
+var car1,car2,car3,car4
+var cars=[]
+var img1,img2,img3,img4
+var track
+var xpo=0
+
+
 
 function setup(){
-    createCanvas(500,500);
-    ball = createSprite(250,250,10,10);
-    ball.shapeColor = "red";
+    createCanvas(displayWidth-20,displayHeight-100);
+    database=firebase.database()
+    game=new Game()
+    game.getstate()
+    game.start()
+   
 }
 
 function draw(){
-    background("white");
-    if(keyDown(LEFT_ARROW)){
-        changePosition(-1,0);
+      if(playerCount==4){
+          game.update(1)
+      }  
+     // game.getstate()
+      if(gamestate==1){
+          clear()
+          game.play()
+      }
+      else
+      if(gamestate==2){
+          game.end()
+      }
+
+      console.log(gamestate)
     }
-    else if(keyDown(RIGHT_ARROW)){
-        changePosition(1,0);
-    }
-    else if(keyDown(UP_ARROW)){
-        changePosition(0,-1);
-    }
-    else if(keyDown(DOWN_ARROW)){
-        changePosition(0,+1);
-    }
-    drawSprites();
+
+
+      function preload(){
+
+img1=loadImage("car1.png")
+img2=loadImage("car2.png")
+img3=loadImage("car3.png")
+img4=loadImage("car4.png")
+track=loadImage("track.jpg")
+
+      }
+
+function updateXP(a){
+
+database.ref('/').update({
+    xp:a
+})
+player.xdistance=a
+player.update()
 }
 
-function changePosition(x,y){
-    ball.x = ball.x + x;
-    ball.y = ball.y + y;
+async function retrieveXP(){
+    var xpref=await database.ref('xp').once("value")
+    if(xpref.exists()){
+xpo=xpref.val()
+    }
+    xpo=xpo+200
+    updateXP(xpo)
 }
